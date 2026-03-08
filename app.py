@@ -6,6 +6,11 @@ from rag_chain import ask_health_question
 # Load environment variables
 load_dotenv()
 
+# Verify GROQ API key
+if not os.getenv("GROQ_API_KEY"):
+    st.error("GROQ_API_KEY is not set in the .env file. Please add it to enable guardrails.")
+    st.stop()
+
 # Page configuration
 st.set_page_config(
     page_title="Uganda Health Guide Chatbot",
@@ -42,22 +47,44 @@ if prompt := st.chat_input("Ask a health question..."):
         try:
             # Call the RAG chain
             result = ask_health_question(prompt)
-            answer = result["answer"]
-            sources = list(set(result["sources"]))
+            status = result.get("status", "SAFE")
             
-            # Formulate response with citations
-            response_content = answer
-            if sources:
-                response_content += "\n\n**Sources:**\n"
-                for i, src in enumerate(sources):
-                    response_content += f"- {os.path.basename(src)}\n"
+            if status == "CRISIS":
+                with st.chat_message("assistant"):
+                    st.error("🚨 **CRISIS DETECTED** 🚨")
+                    st.error("This appears to be a medical emergency or crisis situation.")
+                    st.error("Please seek immediate help from a medical professional or contact emergency services:")
+                    st.error("📞 **Uganda National Emergency:** 999 or 112")
+                    st.error("📞 **Child Helpline:** 116")
+                
+                st.session_state.messages.append({
+                    "role": "assistant", 
+                    "content": "🚨 **CRISIS DETECTED**: Please contact emergency services (999 or 112) immediately."
+                })
             
-            # Display assistant response in chat message container
-            with st.chat_message("assistant"):
-                st.markdown(response_content)
-            
-            # Add assistant response to chat history
-            st.session_state.messages.append({"role": "assistant", "content": response_content})
+            elif status in ["UNSAFE", "OUT_OF_SCOPE"]:
+                answer = result["answer"]
+                with st.chat_message("assistant"):
+                    st.warning(answer)
+                st.session_state.messages.append({"role": "assistant", "content": answer})
+                
+            else:
+                answer = result["answer"]
+                sources = list(set(result["sources"]))
+                
+                # Formulate response with citations
+                response_content = answer
+                if sources:
+                    response_content += "\n\n**Sources:**\n"
+                    for i, src in enumerate(sources):
+                        response_content += f"- {os.path.basename(src)}\n"
+                
+                # Display assistant response in chat message container
+                with st.chat_message("assistant"):
+                    st.markdown(response_content)
+                
+                # Add assistant response to chat history
+                st.session_state.messages.append({"role": "assistant", "content": response_content})
             
         except Exception as e:
             error_msg = f"Sorry, I encountered an error: {str(e)}"

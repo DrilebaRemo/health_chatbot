@@ -10,8 +10,7 @@ def load_and_process_documents(base_dir: str = "documents", max_pages_per_doc: i
     """
     all_chunks = []
     
-    # Text splitter configuration
-    # Larger chunks to minimize API requests and maintain more local context
+    
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=4000,
         chunk_overlap=400,
