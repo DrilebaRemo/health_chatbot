@@ -45,8 +45,19 @@ if prompt := st.chat_input("Ask a health question..."):
 
     with st.spinner("Searching medical guidelines..."):
         try:
+            # Prepare chat history for LangChain
+            from langchain_core.messages import HumanMessage, AIMessage
+            
+            chat_history = []
+            # We skip the very last message since that's the current prompt
+            for msg in st.session_state.messages[:-1]:
+                if msg["role"] == "user":
+                    chat_history.append(HumanMessage(content=msg["content"]))
+                elif msg["role"] == "assistant":
+                    chat_history.append(AIMessage(content=msg["content"]))
+            
             # Call the RAG chain
-            result = ask_health_question(prompt)
+            result = ask_health_question(prompt, chat_history)
             status = result.get("status", "SAFE")
             
             if status == "CRISIS":

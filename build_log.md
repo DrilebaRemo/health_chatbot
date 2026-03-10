@@ -92,3 +92,15 @@ Run python vector_store.py (making sure your virtual environment is active).
 ## Phase 6 (Update): Groq Integration
 - Successfully updated app to use llama-3.1-8b-instant via Groq for input/output checks.
 - Encountered Google API limit during final RAG generation step due to exhausted free tier (20 requests/day per model on Gemini 3-flash). System functions normally once quota resets.
+
+## Phase 7: Conversational Memory Implementation
+- Swapped `RetrievalQA` with `create_history_aware_retriever` and `create_retrieval_chain`.
+- Integrated `ChatPromptTemplate` and `MessagesPlaceholder` for context-aware querying.
+- Updated `app.py` to maintain message history as a list of `HumanMessage` and `AIMessage` objects for the LangChain pipeline.
+- Verified that follow-up questions successfully reference previous context without triggering API exhaustion.
+
+## Phase 8: Context-Aware Guardrails
+- Fixed false-positive `OUT_OF_SCOPE` blocks on follow-up questions.
+- Updated `check_input_guardrails` to accept `chat_history`.
+- Injected recent context into the Llama-3 guardrail prompt.
+- Result: Bot correctly identifies ambiguous follow-ups as safe medical queries.

@@ -8,14 +8,24 @@ from langchain_core.documents import Document
 # Load environment variables (API Key)
 load_dotenv()
 
-import time
+# Global cache to avoid reloading the model on every request
+_EMBEDDINGS_CACHE = None
+
+def get_embeddings():
+    """
+    Singleton for loading embeddings to avoid reloading from disk.
+    """
+    global _EMBEDDINGS_CACHE
+    if _EMBEDDINGS_CACHE is None:
+        print("Loading local embeddings model (all-MiniLM-L6-v2) into memory...")
+        _EMBEDDINGS_CACHE = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    return _EMBEDDINGS_CACHE
 
 def initialize_vector_store(chunks: List[Document], persist_directory: str = "chroma_db"):
     """
     Creates a Chroma vector store from document chunks using local HuggingFace embeddings.
     """
-    print("Initializing local embeddings model (all-MiniLM-L6-v2)...")
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = get_embeddings()
     
     print(f"Creating vector store in {persist_directory}...")
     
@@ -34,7 +44,7 @@ def get_vector_store(persist_directory: str = "chroma_db"):
     """
     Loads an existing Chroma vector store from disk.
     """
-    embeddings = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+    embeddings = get_embeddings()
     vector_store = Chroma(
         persist_directory=persist_directory,
         embedding_function=embeddings
