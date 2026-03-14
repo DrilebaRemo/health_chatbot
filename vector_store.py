@@ -21,7 +21,7 @@ def get_embeddings():
         _EMBEDDINGS_CACHE = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
     return _EMBEDDINGS_CACHE
 
-def initialize_vector_store(chunks: List[Document], persist_directory: str = "chroma_db"):
+def initialize_vector_store(chunks: List[Document], persist_directory: str = "chroma_db_mental_v2"):
     """
     Creates a Chroma vector store from document chunks using local HuggingFace embeddings.
     """
@@ -40,7 +40,7 @@ def initialize_vector_store(chunks: List[Document], persist_directory: str = "ch
     print("Vector store created and persisted successfully.")
     return vector_store
 
-def get_vector_store(persist_directory: str = "chroma_db"):
+def get_vector_store(persist_directory: str = "chroma_db_mental_v2"):
     """
     Loads an existing Chroma vector store from disk.
     """
@@ -56,8 +56,8 @@ if __name__ == "__main__":
     from document_processor import load_and_process_documents
     
     print("Running vector store test...")
-    if not os.path.exists("chroma_db"):
-        print("Loading documents (Full Indexing with Local Embeddings)...")
+    if not os.path.exists("chroma_db_mental_v2"):
+        print("Loading documents (Full Indexing with Local Embeddings for Mental Health)...")
         # Local embeddings are quota-free, so we process the whole document set
         chunks = load_and_process_documents()
         if chunks:

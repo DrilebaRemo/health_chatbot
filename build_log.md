@@ -111,3 +111,24 @@ Run python vector_store.py (making sure your virtual environment is active).
 - Refactored `rag_chain.py` to extract structured metadata objects instead of raw source paths.
 - Updated `app.py` UI to display clickable citations in the format: **[Document Name](URL) (Page X)**.
 - Rebuilt the vector store index to apply metadata changes across the entire knowledge base.
+## Phase 10: Mental Health Bot Specialization (Uganda Focus)
+- Created a separate `mental-health-bot` branch for domain-specific development.
+- Specialized `rag_chain.py` system prompt:
+    - Shifted persona to "Compassionate Mental Health Assistant".
+    - Emphasized empathy, active listening, and strictly defined non-therapist boundaries.
+    - Tailored branding for the Ugandan context and Ministry of Health standards.
+- Rebranded `app.py` UI:
+    - Updated titles, icons (🧠), and introductory text for mental wellness.
+    - Replaced general medical emergency contacts with specialized mental health resources in Uganda (e.g., Uganda Counselling Association, Butabika Hospital).
+    - Added a dedicated mental health support section to the sidebar.
+- Created `documents/mental_health/` directory to house specialized knowledge base assets.
+- Isolated Knowledge Base Architecture:
+    - Updated `vector_store.py` to use `chroma_db_mental` as the default persistence directory.
+    - Updated `document_processor.py` to use `documents/mental_health` as the default source directory.
+    - Ensures total data separation between the mental health branch and the main medical branch.
+- Specialized 4-Layer Guardrails:
+    - Refined Input Guardrails: Added sensitivity for "severe hopelessness" and "active psychosis" detection.
+    - Specialized Crisis Escalation: Integrated mental health specific hotlines (UCA, Butabika) into the emergency response layer.
+    - Tone Governance: Enforced empathic validation while maintaining strict non-therapeutic clinical boundaries.
+- Knowledge Base Integration:
+    - Successfully indexed 5 mental health specialized documents including the Mental Health Act 2018 and Child & Adolescent Policy Guidelines.
