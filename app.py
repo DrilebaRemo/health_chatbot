@@ -81,14 +81,26 @@ if prompt := st.chat_input("Ask a health question..."):
                 
             else:
                 answer = result["answer"]
-                sources = list(set(result["sources"]))
+                sources = result["sources"] # Now a list of dicts
                 
                 # Formulate response with citations
                 response_content = answer
                 if sources:
                     response_content += "\n\n**Sources:**\n"
-                    for i, src in enumerate(sources):
-                        response_content += f"- {os.path.basename(src)}\n"
+                    # Deduplicate based on doc name and page
+                    seen_sources = set()
+                    for src in sources:
+                        src_key = (src["doc_name"], src["page"])
+                        if src_key not in seen_sources:
+                            doc_name = src["doc_name"]
+                            page = src["page"]
+                            url = src["url"]
+                            
+                            if url:
+                                response_content += f"- [{doc_name}]({url}) (Page {page})\n"
+                            else:
+                                response_content += f"- {doc_name} (Page {page})\n"
+                            seen_sources.add(src_key)
                 
                 # Display assistant response in chat message container
                 with st.chat_message("assistant"):

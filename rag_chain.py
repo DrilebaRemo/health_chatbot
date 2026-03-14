@@ -186,7 +186,14 @@ def ask_health_question(question: str, chat_history: list = None):
     
     return {
         "answer": answer,
-        "sources": [doc.metadata.get("source") for doc in response["context"]],
+        "sources": [
+            {
+                "doc_name": doc.metadata.get("doc_name", os.path.basename(doc.metadata.get("source", "Unknown"))),
+                "url": doc.metadata.get("source_url", ""),
+                "page": doc.metadata.get("page_label", "Unknown")
+            }
+            for doc in response["context"]
+        ],
         "status": "SAFE"
     }
 
@@ -200,7 +207,11 @@ if __name__ == "__main__":
         print(f"\nStatus: {result.get('status')}")
         print("\nAnswer:\n", result["answer"])
         print("\nSources:\n")
-        for source in set(result["sources"]):
-            print(f"- {source}")
+        seen_sources = set()
+        for src in result["sources"]:
+            src_key = (src["doc_name"], src["page"])
+            if src_key not in seen_sources:
+                print(f"- {src['doc_name']} (Page {src['page']}) - URL: {src['url']}")
+                seen_sources.add(src_key)
     except Exception as e:
         print(f"Error: {e}")

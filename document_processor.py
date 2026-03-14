@@ -4,12 +4,22 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
+import json
+
+def load_sources_map(map_path: str = "sources.json") -> dict:
+    """Loads the sources mapping file."""
+    if os.path.exists(map_path):
+        with open(map_path, "r") as f:
+            return json.load(f)
+    return {}
+
 def load_and_process_documents(base_dir: str = "documents", max_pages_per_doc: int = 9999) -> List[Document]:
     """
     Recursively scans the documents directory, loads a limited number of pages from PDFs, and splits them into chunks.
+    Enriches metadata with descriptive names and source URLs.
     """
     all_chunks = []
-    
+    sources_map = load_sources_map()
     
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=4000,
@@ -31,6 +41,20 @@ def load_and_process_documents(base_dir: str = "documents", max_pages_per_doc: i
                     
                     # Slice pages
                     docs = full_docs[:max_pages_per_doc]
+                    
+                    # Enrich metadata before splitting
+                    source_info = sources_map.get(file, {})
+                    doc_name = source_info.get("doc_name", file)
+                    source_url = source_info.get("url", "")
+                    
+                    for doc in docs:
+                        # PyPDFLoader provides 0-indexed 'page' in metadata
+                        page_num = doc.metadata.get("page", 0) + 1
+                        doc.metadata.update({
+                            "doc_name": doc_name,
+                            "source_url": source_url,
+                            "page_label": str(page_num)
+                        })
                     
                     # Splitting into chunks
                     chunks = text_splitter.split_documents(docs)

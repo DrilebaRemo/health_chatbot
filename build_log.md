@@ -104,3 +104,10 @@ Run python vector_store.py (making sure your virtual environment is active).
 - Updated `check_input_guardrails` to accept `chat_history`.
 - Injected recent context into the Llama-3 guardrail prompt.
 - Result: Bot correctly identifies ambiguous follow-ups as safe medical queries.
+
+## Phase 9: Enhanced Metadata & Citations
+- Created `sources.json` to map PDF filenames to descriptive names and official source URLs.
+- Updated `document_processor.py` to inject `doc_name`, `source_url`, and `page_label` (1-indexed) into chunk metadata.
+- Refactored `rag_chain.py` to extract structured metadata objects instead of raw source paths.
+- Updated `app.py` UI to display clickable citations in the format: **[Document Name](URL) (Page X)**.
+- Rebuilt the vector store index to apply metadata changes across the entire knowledge base.
