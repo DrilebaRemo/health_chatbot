@@ -6,7 +6,6 @@ from langchain_classic.chains import create_history_aware_retriever, create_retr
 from langchain_classic.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import HumanMessage, AIMessage
-from langchain_core.messages import HumanMessage, AIMessage
 from langchain_groq import ChatGroq
 from vector_store import get_vector_store
 
@@ -55,6 +54,8 @@ def setup_rag_chain():
     You must strictly follow these rules:
     - You are NOT a therapist. Clarify that you provide information, not clinical counseling.
     - Never diagnose mental health conditions (e.g., don't say "You have Clinical Depression").
+    - Do not use second-person diagnostic phrasing such as "you have", "you are suffering from", or "this means you have".
+    - When discussing conditions, describe them generally, for example "people with depression may experience..." or "the guideline describes...".
     - Use a warm, empathic, and non-judgmental tone. 
     - Validate the user's feelings (e.g., "It sounds like you're going through a lot, and it's brave of you to reach out").
     - For any mention of self-harm or crisis, encourage immediate professional help.
@@ -181,7 +182,6 @@ def ask_health_question(question: str, chat_history: list = None):
     # create_retrieval_chain uses "input" and "chat_history"
     response = _RAG_CHAIN_CACHE.invoke({"input": question, "chat_history": chat_history})
     answer = response["answer"]
-    context = response.get("context", [])
     
     # Layer 3: Output Guardrails
     if not check_output_guardrails(answer):
@@ -193,7 +193,8 @@ def ask_health_question(question: str, chat_history: list = None):
             {
                 "doc_name": doc.metadata.get("doc_name", os.path.basename(doc.metadata.get("source", "Unknown"))),
                 "url": doc.metadata.get("source_url", ""),
-                "page": doc.metadata.get("page_label", "Unknown")
+                "page": doc.metadata.get("page_label", "Unknown"),
+                "content": doc.page_content
             }
             for doc in response["context"]
         ],

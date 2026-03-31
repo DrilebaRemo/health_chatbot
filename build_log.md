@@ -132,3 +132,16 @@ Run python vector_store.py (making sure your virtual environment is active).
     - Tone Governance: Enforced empathic validation while maintaining strict non-therapeutic clinical boundaries.
 - Knowledge Base Integration:
     - Successfully indexed 5 mental health specialized documents including the Mental Health Act 2018 and Child & Adolescent Policy Guidelines.
+
+## Phase 11: Automated RAG Evaluation (Ragas + Colab)
+- Integrated **Ragas** framework for automated quality assessment of the RAG system.
+- Implemented `evals/run_ragas_eval.py`:
+    - Automated inference pipeline using the existing `ask_health_question` function.
+    - Configured Ragas to use Gemini 1.5 Flash as a judge LLM.
+    - Local `HuggingFaceEmbeddings` used for metric calculations (Faithfulness, Answer Relevancy, Context Precision/Recall).
+- Created `evals/manual_eval_cases.json` with ground truth for testing.
+- Developed `evals/COLAB_EVAL_GUIDE.md`:
+    - Detailed Google Colab execution steps (Upload -> Setup -> Run).
+    - Explicit dependency handling for `langchain-groq` and `langchain-core` to resolve `ModuleNotFoundError`.
+    - Instructions for `GOOGLE_API_KEY` and `GROQ_API_KEY` configuration.
+- Verified evaluation results tracking in `evals/results/`.
