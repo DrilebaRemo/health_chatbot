@@ -13,7 +13,7 @@ def load_sources_map(map_path: str = "sources.json") -> dict:
             return json.load(f)
     return {}
 
-def load_and_process_documents(base_dir: str = "documents", max_pages_per_doc: int = 9999) -> List[Document]:
+def load_and_process_documents(base_dir: str = "documents/mental_health", max_pages_per_doc: int = 9999) -> List[Document]:
     """
     Recursively scans the documents directory, loads a limited number of pages from PDFs, and splits them into chunks.
     Enriches metadata with descriptive names and source URLs.
@@ -42,8 +42,13 @@ def load_and_process_documents(base_dir: str = "documents", max_pages_per_doc: i
                     # Slice pages
                     docs = full_docs[:max_pages_per_doc]
                     
-                    # Enrich metadata before splitting
-                    source_info = sources_map.get(file, {})
+                    # Enrich metadata before splitting (Case-insensitive lookup)
+                    source_info = {}
+                    for k, v in sources_map.items():
+                        if k.lower() == file.lower():
+                            source_info = v
+                            break
+                    
                     doc_name = source_info.get("doc_name", file)
                     source_url = source_info.get("url", "")
                     

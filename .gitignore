@@ -2,7 +2,9 @@
 venv/
 __pycache__/
 *.pyc
-chroma_db/
+chroma_db*/
 .streamlit/
 documents/
 .agent/
+.DS_Store
+*.log

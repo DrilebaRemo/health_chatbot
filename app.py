@@ -13,18 +13,18 @@ if not os.getenv("GROQ_API_KEY"):
 
 # Page configuration
 st.set_page_config(
-    page_title="Uganda Health Guide Chatbot",
-    page_icon="🏥",
+    page_title="Uganda Mental Well-being Guide",
+    page_icon="🧠",
     layout="centered"
 )
 
 # Header
-st.title("🏥 Uganda Health Guide")
+st.title("🧠 Uganda Mental Well-being Guide")
 st.markdown("""
-Welcome! This chatbot provides medical information based on the **Uganda Clinical Guidelines 2023** 
-and WHO standards. 
+Welcome! This chatbot provides supportive mental health information and guidance tailored for **Uganda**, 
+based on Ministry of Health standards and WHO mhGAP.
 
-*Enter your health-related questions below.*
+*Your well-being matters. Ask any questions about mental health or wellness below.*
 """)
 
 # Initialize chat history
@@ -63,14 +63,15 @@ if prompt := st.chat_input("Ask a health question..."):
             if status == "CRISIS":
                 with st.chat_message("assistant"):
                     st.error("🚨 **CRISIS DETECTED** 🚨")
-                    st.error("This appears to be a medical emergency or crisis situation.")
-                    st.error("Please seek immediate help from a medical professional or contact emergency services:")
-                    st.error("📞 **Uganda National Emergency:** 999 or 112")
-                    st.error("📞 **Child Helpline:** 116")
+                    st.error("It sounds like you are going through an extremely difficult time. Please reach out for professional support immediately.")
+                    st.error("You are not alone. Help is available:")
+                    st.error("📞 **Uganda Counselling Association (UCA):** +256 706 345688")
+                    st.error("📞 **Butabika National Referral Hospital:** +256 414 504376")
+                    st.error("📞 **National Emergency:** 999 or 112")
                 
                 st.session_state.messages.append({
                     "role": "assistant", 
-                    "content": "🚨 **CRISIS DETECTED**: Please contact emergency services (999 or 112) immediately."
+                    "content": "🚨 **CRISIS DETECTED**: Please contact the Uganda Counselling Association or emergency services immediately."
                 })
             
             elif status in ["UNSAFE", "OUT_OF_SCOPE"]:
@@ -118,13 +119,21 @@ if prompt := st.chat_input("Ask a health question..."):
 with st.sidebar:
     st.header("About")
     st.info("""
-    This tool is designed to assist health workers and the public in Uganda 
-    to quickly find information from official management guidelines.
+    This tool is designed to support mental well-being in Uganda by providing 
+    access to official clinical guidelines and supportive resources.
     """)
     st.warning("""
-    **DISCLAIMER:** This is an AI assistant. It does not replace professional medical judgment. 
-    Always consult a qualified health professional for diagnosis and treatment.
+    **DISCLAIMER:** I am an AI, not a therapist. This tool provides information 
+    from health guidelines and is not a substitute for clinical diagnosis or therapy.
     """)
+    
+    st.markdown("### 📞 Mental Health Support")
+    st.markdown("""
+    - **UCA Hotline:** +256 706 345688
+    - **Butabika Hospital:** +256 414 504376
+    - **Emergency:** 999 / 112
+    """)
+    
     if st.button("Clear Chat"):
         st.session_state.messages = []
         st.rerun()
